@@ -8,9 +8,9 @@
   "engines": {
     "vscode": "^1.97.0"
   },
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "scripts": {
-    "compile": "cd tinymist && yarn build:preview && cd .. && tsc -p .",
+    "build": "cd typst-previewer && yarn build && cd .. && tsc -p .",
     "vscode": "vsce package --allow-missing-repository"
   },
   "devDependencies": {
