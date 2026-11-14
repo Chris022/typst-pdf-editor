@@ -1,0 +1,25 @@
+{
+  "name": "typst-pdf-editor",
+  "displayName": "Typst PDF Editor",
+  "description": "This is a vs codium plugin that allows one to read PDFs and add comments using typst",
+  "publisher": "chris",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "engines": {
+    "vscode": "^1.97.0"
+  },
+  "main": "./out/extension.js",
+  "scripts": {
+    "compile": "cd tinymist && yarn build:preview && cd .. && tsc -p .",
+    "vscode": "vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/vscode": "^1.97.0",
+    "@types/ws": "^8.18.2",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  }
+}
