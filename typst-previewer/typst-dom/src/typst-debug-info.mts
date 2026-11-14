@@ -111,6 +111,7 @@ export function resolveSourceLeaf(
   return [curElem, 0];
 }
 
+//THIS IS also very important!
 export function installEditorJumpToHandler(
   windowElem: TypstDomWindowElement,
   docRoot: TypstDomHookedElement,
@@ -184,6 +185,7 @@ export function installEditorJumpToHandler(
   };
 
   removeSourceMappingHandler(docRoot);
+  //HERE!
   const sourceMappingHandler = ((docRoot as any).sourceMappingHandler = async (
     event: MouseEvent,
   ) => {
