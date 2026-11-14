@@ -38,7 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.extensions.getExtension(TINYMIST_EXTENSION_ID)?.packageJSON.version ?? "0.0.0",
       );
       return {
-        htmlPath: "typst-previewer/dist/index.html",
+        htmlPath: "dist/preview.html",
         compatibleTinymistVersion: tinymistVersion,
       };
     },

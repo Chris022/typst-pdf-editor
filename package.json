@@ -10,7 +10,7 @@
   },
   "main": "./dist/extension.js",
   "scripts": {
-    "build": "cd typst-previewer && yarn build && cd .. && tsc -p .",
+    "build": "cd typst-previewer && yarn build && cp dist/index.html ../dist/preview.html && cd .. && tsc -p .",
     "vscode": "vsce package --allow-missing-repository"
   },
   "devDependencies": {
@@ -21,5 +21,8 @@
   },
   "dependencies": {
     "ws": "^8.22.0"
-  }
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ]
 }
