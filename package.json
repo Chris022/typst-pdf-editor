@@ -11,7 +11,8 @@
   "main": "./dist/extension.js",
   "scripts": {
     "build": "cd typst-previewer && yarn build && cp dist/index.html ../dist/preview.html && cd .. && tsc -p .",
-    "vscode": "vsce package --allow-missing-repository"
+    "vscode": "vsce package --allow-missing-repository",
+    "install": "codium --uninstall-extension chris.typst-pdf-editor && codium --install-extension ./typst-pdf-editor-0.0.1.vsix && echo \"\n\n\n\nInstalled Extension, now Control Shift P + Developer: Reload window\n\n\""
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
