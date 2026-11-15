@@ -9,7 +9,6 @@
   "dependencies": {
     "@myriaddreamin/typst-ts-renderer": "=0.8.0-rc3",
     "@myriaddreamin/typst.ts": "=0.8.0-rc3",
-    "typst-dom": "link:typst-dom",
     "rxjs": "^7.8.1",
     "typescript": "^5.3.3",
     "vite": "^6.1.0",

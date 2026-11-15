@@ -5,7 +5,7 @@
 // @param (id): string value of a unique event id
 // @doc (event.timeStamp): http://api.jquery.com/event.timeStamp/
 
-import { TypstDomWindowElement } from "typst-dom";
+import { TypstDomWindowElement } from "./typst-dom/typst-doc.mjs";
 
 // @bug (event.currentTime): https://bugzilla.mozilla.org/show_bug.cgi?id=238041
 let ignoredEvent = (function () {

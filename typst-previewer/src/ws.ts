@@ -1,9 +1,9 @@
-import { PreviewMode } from "typst-dom/typst-doc.mjs";
+import { PreviewMode } from "./typst-dom/typst-doc.mjs";
 import {
   TypstPreviewDocument as TypstDocument,
   TypstDomHookedElement,
   TypstDomWindowElement,
-} from "typst-dom/index.preview.mjs";
+} from "./typst-dom/index.preview.mjs";
 import {
   rendererBuildInfo,
   createTypstRenderer,
@@ -15,7 +15,7 @@ import { RenderSession } from "@myriaddreamin/typst.ts/dist/esm/renderer.mjs";
 import { WebSocketSubject, webSocket } from "rxjs/webSocket";
 import { Subject, Subscription, buffer, debounceTime, fromEvent, tap } from "rxjs";
 import { handleHtmlPreviewFrame } from "./html-preview";
-export { PreviewMode } from "typst-dom/typst-doc.mjs";
+export { PreviewMode } from "./typst-dom/typst-doc.mjs";
 
 // for debug propose
 // queryObjects((window as any).TypstRenderSession);
