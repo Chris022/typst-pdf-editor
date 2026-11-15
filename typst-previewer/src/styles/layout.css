@@ -17,7 +17,6 @@
 
 #typst-container {
   --main-margin: 0px;
-  cursor: grab;
 }
 
 #typst-container.mode-doc {

@@ -7,7 +7,6 @@ import "./styles/help-panel.css";
 import "./styles/outline.css";
 
 import { wsMain, PreviewMode } from "./ws";
-import { setupDrag } from "./drag";
 
 const windowElem = document.getElementById("typst-container");
 windowElem.documents = [];
@@ -20,7 +19,6 @@ function main() {
   const { nextWs } = buildWs();
   window.onload = () => nextWs(wsArgs);
   setupVscodeChannel(nextWs);
-  setupDrag();
 }
 
 /// Placeholders for typst-preview program initializing frontend
