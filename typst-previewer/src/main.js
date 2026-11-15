@@ -1,6 +1,6 @@
 /// Import stylesheets for different components
 // todo: refactor them, but we don't touch them in this PR
-import "./typst.css";
+import "./styles/typst.css";
 import "./styles/toolbar.css";
 import "./styles/layout.css";
 import "./styles/help-panel.css";
