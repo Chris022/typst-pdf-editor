@@ -1,3 +1,9 @@
+// -------------------------------------------------------------------------
+// | This file is only here as a reference and should not be used anymore! |
+// -------------------------------------------------------------------------
+
+
+
 import { triggerRipple } from "./typst-animation.mjs";
 import {
   PreviewMode,
@@ -197,13 +203,11 @@ export function installEditorJumpToHandler(
       return;
     }
     console.log("frameLoc", frameLoc);
-    //Please don't jump to the position in the source code - at least not for now. In the future this will probably be cool
-    // but then only when "add mode" is not activated
-
-    //windowElem.typstWebsocket.send(`src-point ${JSON.stringify(frameLoc)}`);
+  
+    windowElem.typstWebsocket.send(`src-point ${JSON.stringify(frameLoc)}`);
 
     //MY custom send
-    const vscodeAPI = (window as any).vscodeAPI;
+/*     const vscodeAPI = (window as any).vscodeAPI;
 
     // Send Message to my backend, to insert new comment at given position.
     vscodeAPI?.postMessage({
@@ -211,7 +215,7 @@ export function installEditorJumpToHandler(
         "x":frameLoc.x,
         "y":frameLoc.y,
         "page": frameLoc.page_no
-      });
+      }); */
 
     const triggerWindow = document.body || document.firstElementChild;
     const basePos = triggerWindow.getBoundingClientRect();
