@@ -4,11 +4,6 @@ import { TypstPatchAttrs, isDummyPatchElem } from "./typst-patch.mjs";
 import type { GConstructor, TypstDocumentContext } from "./typst-doc.mjs";
 import type { CanvasPage, TypstCanvasDocument } from "./typst-doc.canvas.mjs";
 import { patchSvgToContainer } from "./typst-patch.svg.mjs";
-import { ElementPoint, resolveSourceLeaf } from "./typst-debug-info.mjs";
-
-export interface TypstSvgDocument {
-  setCursorPaths(paths: ElementPoint[][]): void;
-}
 
 const SVG_RESIZE_ANCHOR_TTL_MS = 600;
 const SVG_SCALE_EPSILON = 1e-6;
@@ -37,7 +32,7 @@ interface SvgAnchorPage {
 
 export function provideSvgDoc<
   TBase extends GConstructor<TypstDocumentContext & Partial<TypstCanvasDocument>>,
->(Base: TBase): TBase & GConstructor<TypstSvgDocument> {
+>(Base: TBase): TBase {
   return class SvgDocument extends Base {
     /// canvas render ctoken
     canvasRenderCToken?: TypstCancellationToken;
@@ -52,8 +47,6 @@ export function provideSvgDoc<
       return !!this.feat$canvas;
     }
 
-    /// cursor path is a list of element point from root to leaf
-    cursorPaths?: ElementPoint[][] = undefined;
     /// last applied svg total scale (currentRealScale * currentScaleRatio); used for
     /// scroll anchoring when the panel/container is resized.
     private lastSvgScale?: number;
@@ -69,10 +62,6 @@ export function provideSvgDoc<
       viewportAnchor?: SvgResizeAnchor;
     };
     private svgResizeAnchorTimeout?: ReturnType<typeof setTimeout>;
-    setCursorPaths(paths: ElementPoint[][]) {
-      this.cursorPaths = paths;
-      this.addViewportChange();
-    }
 
     postRender$svg() {
       const docRoot = this.hookedElem.firstElementChild as SVGElement;
@@ -97,7 +86,7 @@ export function provideSvgDoc<
       patchSvgToContainer(this.hookedElem, patchStr, (elem) => this.decorateSvgElement(elem, mode));
       const t3 = performance.now();
 
-      if (this.cursorPaths) {
+      /* if (this.cursorPaths) {
         for (const c of document.querySelectorAll(".typst-svg-cursor")) {
           c.remove();
         }
@@ -175,7 +164,7 @@ export function provideSvgDoc<
             leaf[0].appendChild(t);
           }
         }
-      }
+      } */
 
       return [t2, t3];
     }
