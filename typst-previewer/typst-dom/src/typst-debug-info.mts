@@ -7,6 +7,7 @@ import {
   type TypstDocumentContext,
 } from "./typst-doc.mjs";
 
+
 const enum SourceMappingType {
   Text = 0,
   Group = 1,
@@ -197,6 +198,17 @@ export function installEditorJumpToHandler(
     }
     console.log("frameLoc", frameLoc);
     windowElem.typstWebsocket.send(`src-point ${JSON.stringify(frameLoc)}`);
+
+    //MY custom send
+    const vscodeAPI = (window as any).vscodeAPI;
+
+
+    // Frontend -> extension
+    vscodeAPI?.postMessage({
+        type: "mouse-click",
+        "x":100,
+        "y":100
+      });
 
     const triggerWindow = document.body || document.firstElementChild;
     const basePos = triggerWindow.getBoundingClientRect();

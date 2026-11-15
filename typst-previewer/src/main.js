@@ -104,13 +104,13 @@ function buildWs() {
 /// A frontend will try to setup a vscode channel if it is running
 /// in vscode.
 function setupVscodeChannel(nextWs) {
-  const vscodeAPI = typeof acquireVsCodeApi !== "undefined" && acquireVsCodeApi();
-  if (vscodeAPI?.postMessage) {
-    vscodeAPI.postMessage({ type: "started" });
-  }
-  if (vscodeAPI?.setState && window.vscode_state) {
-    vscodeAPI.setState(window.vscode_state);
-  }
+
+  const vscodeAPI =
+  typeof acquireVsCodeApi === "function"
+    ? acquireVsCodeApi()
+    : undefined;
+
+  window.vscodeAPI = vscodeAPI;
 
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
