@@ -186,7 +186,7 @@ export function installEditorJumpToHandler(
   };
 
   removeSourceMappingHandler(docRoot);
-  //HERE!
+  
   const sourceMappingHandler = ((docRoot as any).sourceMappingHandler = async (
     event: MouseEvent,
   ) => {
@@ -197,17 +197,20 @@ export function installEditorJumpToHandler(
       return;
     }
     console.log("frameLoc", frameLoc);
-    windowElem.typstWebsocket.send(`src-point ${JSON.stringify(frameLoc)}`);
+    //Please don't jump to the position in the source code - at least not for now. In the future this will probably be cool
+    // but then only when "add mode" is not activated
+
+    //windowElem.typstWebsocket.send(`src-point ${JSON.stringify(frameLoc)}`);
 
     //MY custom send
     const vscodeAPI = (window as any).vscodeAPI;
 
-
-    // Frontend -> extension
+    // Send Message to my backend, to insert new comment at given position.
     vscodeAPI?.postMessage({
         type: "mouse-click",
-        "x":100,
-        "y":100
+        "x":frameLoc.x,
+        "y":frameLoc.y,
+        "page": frameLoc.page_no
       });
 
     const triggerWindow = document.body || document.firstElementChild;
