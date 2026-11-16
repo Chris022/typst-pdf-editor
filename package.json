@@ -20,9 +20,13 @@
     "@types/node": "^26.6.5",
     "@types/vscode": "^1.97.0",
     "@types/ws": "^8.18.2",
+    "esbuild-plugin-wasm": "^1.1.0",
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@myriaddreamin/typst-ts-renderer": "=0.8.0-rc3",
+    "@myriaddreamin/typst-ts-web-compiler": "=0.8.0-rc3",
+    "@myriaddreamin/typst.ts": "=0.8.0-rc3",
     "esbuild": "^0.28.2",
     "ws": "^8.22.0"
   },

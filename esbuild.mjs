@@ -24,6 +24,9 @@ const result = await esbuild.build({
   write: false,          // don't emit main.js
   minify: !isProduction,
   sourcemap: isProduction ? 'inline' : false,
+  loader: {
+  '.wasm': 'binary', // This loads the file as a Uint8Array
+  },
 });
 
 const js = result.outputFiles[0].text
