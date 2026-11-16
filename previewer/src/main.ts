@@ -1,5 +1,3 @@
-export function main(){
-    console.log("It terwerks")
-}
+import {main} from "./test.mjs"
 
 main()
