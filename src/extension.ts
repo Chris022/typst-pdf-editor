@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-const TINYMIST_EXTENSION_ID = "myriad-dreamin.tinymist";
+const TINYMIST_EXTENSION_ID = "chris.typst-pdf-editor";
 
 export async function activate(_context: vscode.ExtensionContext) {
   return {
