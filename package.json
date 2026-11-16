@@ -1,0 +1,30 @@
+{
+  "name": "typst-pdf-editor",
+  "displayName": "Typst PDF Editor",
+  "description": "This is a vs codium plugin that allows one to read PDFs and add comments using typst",
+  "publisher": "chris",
+  "version": "0.0.2",
+  "license": "Apache-2.0",
+  "engines": {
+    "vscode": "^1.97.0"
+  },
+  "main": "./out/extension.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "vscode": "vsce package --allow-missing-repository",
+    "plugin": "codium --uninstall-extension chris.typst-pdf-editor && codium --install-extension ./typst-pdf-editor-0.0.1.vsix && echo \"\n\n\n\nInstalled Extension, now Control Shift P + Developer: Reload window\n\n\"",
+    "all": "yarn build && yarn vscode && yarn plugin"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/vscode": "^1.97.0",
+    "@types/ws": "^8.18.2",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ]
+}
