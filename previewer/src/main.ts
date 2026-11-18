@@ -11,7 +11,6 @@ const enc = new TextEncoder();
 const dec = new TextDecoder();
 
 let canvas = null as null | HTMLCanvasElement;
-let div = null as null | HTMLElement;
 
 let releaseSession;
 let session_store;
@@ -19,7 +18,6 @@ let session_store;
 window.addEventListener("load", async () => {
 
   canvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
-  div = document.getElementById('preview-div') as HTMLElement;
 
   await renderer.init({
     getModule: () => wasmBytes,
@@ -68,7 +66,7 @@ ws.onmessage = async (event: MessageEvent) => {
 
   console.log(message_type);
 
-  if (!div || !canvas) {
+  if (!canvas) {
     console.log("Canvas not Found");
     return
   }
@@ -79,9 +77,12 @@ ws.onmessage = async (event: MessageEvent) => {
 
     renderer.manipulateData({ renderSession: session, action: `merge`, data: payload });
 
-    renderer.renderToCanvas({
-        container: div,
-        renderSession: session
+    let context = canvas.getContext("2d");
+
+    session.renderCanvas({
+        canvas: context,
+        pageOffset: 0,
+        backgroundColor: "#fff"
     }) 
 
   }
@@ -92,10 +93,10 @@ ws.onmessage = async (event: MessageEvent) => {
 
     renderer.manipulateData({ renderSession: session, action: `merge`, data: payload });
 
-    renderer.renderToCanvas({
+/*     renderer.renderToCanvas({
         container: div,
         renderSession: session
-    })
+    }) */
   }
 };
 
