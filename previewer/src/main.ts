@@ -1,4 +1,4 @@
-import { createTypstRenderer } from '@myriaddreamin/typst.ts';
+import { createTypstRenderer, RenderSession, TypstRenderer } from '@myriaddreamin/typst.ts';
 import { ManipulateDataOptions, RenderInSessionOptions, RenderOptions, RenderToCanvasOptions } from '@myriaddreamin/typst.ts/dist/esm/options.render.mjs';
 import wasmBytes from '@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm';
 
@@ -10,26 +10,44 @@ var ws = new WebSocket("ws://127.0.0.1:23625")
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 
-let container = null as null | HTMLElement;
+let canvas = null as null | HTMLCanvasElement;
+let div = null as null | HTMLElement;
 
+let releaseSession;
+let session_store;
 
 window.addEventListener("load", async () => {
 
-  container = document.getElementById('preview-canvas') as HTMLElement;
+  canvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
+  div = document.getElementById('preview-div') as HTMLElement;
 
   await renderer.init({
     getModule: () => wasmBytes,
   });
 
-  // Request a full frame immediately upon connection.
-  ws.send("current");
+ session_store = new Promise<RenderSession>((resolveSession, rejectSession) => {
+      let sessionResolved = false;
+      let releaseResolve: () => void = () => {};
+      const releasePromise = new Promise<void>((resolve) => {
+        releaseResolve = resolve;
+      });
+      releaseSession = releaseResolve;
 
+      renderer.runWithSession(async (session) => {
+        sessionResolved = true;
+        resolveSession(session);
+        await releasePromise;
+      });
+    });
 })
 
 ws.binaryType = 'arraybuffer';
 
 ws.onopen = () => {
   console.log('Connected to Tinymist data plane');
+
+  // Request a full frame immediately upon connection.
+  ws.send("current");
 };
 
 ws.onmessage = async (event: MessageEvent) => {
@@ -46,27 +64,41 @@ ws.onmessage = async (event: MessageEvent) => {
 
   const message_type = dec.decode(bytes.slice(0, message_idx).buffer);
 
-  const data = bytes.slice(message_idx + 1);
+  const payload = bytes.slice(message_idx + 1);
 
   console.log(message_type);
 
-  if (!container) {
+  if (!div || !canvas) {
     console.log("Canvas not Found");
     return
   }
 
-  if (message_type == "new") {
-      await renderer.renderToCanvas({
-        container: container, 
-        artifactContent: data,
-        format: 'vector',
-        pixelPerPt: 6,
-        backgroundColor: '#ffffff' } as RenderOptions<RenderToCanvasOptions>);
 
-      // Get rid of weird transform that is added by renderToCanvas
-      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
-      if(canvas.parentElement){
-        canvas.parentElement.style = "none"
-      }
+  if (message_type == "new") {
+    let session = await session_store;
+
+    renderer.manipulateData({ renderSession: session, action: `merge`, data: payload });
+
+    renderer.renderToCanvas({
+        container: div,
+        renderSession: session
+    }) 
+
+  }
+
+  if (message_type == "diff-v1") {
+
+    let session = await session_store;
+
+    renderer.manipulateData({ renderSession: session, action: `merge`, data: payload });
+
+    renderer.renderToCanvas({
+        container: div,
+        renderSession: session
+    })
   }
 };
+
+window.onclose= () => {
+  releaseSession();
+}
