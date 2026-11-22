@@ -24,6 +24,11 @@
   dependencies:
     idb "^7.1.1"
 
+"@types/alpinejs@^3.17.0":
+  version "3.17.0"
+  resolved "https://registry.npmjs.org/@types/alpinejs/-/alpinejs-3.17.0.tgz"
+  integrity sha512-sVgCM7bI/tUiHZVpDTsx/UBhcck3WSed21CeraITFDL16nGJI/wCVEGCYu7QWtI9+/D2Ripx9wGXoSzQSDog6A==
+
 "@types/node@*", "@types/node@^26.6.5":
   version "26.6.6"
   resolved "https://registry.npmjs.org/@types/node/-/node-26.6.6.tgz"
@@ -48,12 +53,75 @@
   resolved "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.0.2.tgz"
   integrity sha512-EYdf2cNg7rgCWJnxCdJ+F3V39O8ihb37eHAu1LK8oAFizgTQbPOK7zHHXbPt8rX24COqODXeI3sIf0fCXG7H/A==
 
+"@vue/reactivity@~3.5.40":
+  version "3.5.46"
+  resolved "https://registry.npmjs.org/@vue/reactivity/-/reactivity-3.5.46.tgz"
+  integrity sha512-+FHtYTvGxgFoX3oRs7soz6JHizGv50Q26WJN6PWtXuTLXRfkfUpDUTRuoTA/kiZVVt8NMeMpsPQLh9h++ReUjQ==
+  dependencies:
+    "@vue/shared" "3.5.46"
+
+"@vue/shared@3.5.46":
+  version "3.5.46"
+  resolved "https://registry.npmjs.org/@vue/shared/-/shared-3.5.46.tgz"
+  integrity sha512-P1WePbdzHrcIciWtmY2Im9EFhdakd3rZxYqvalOa3SfoxtF35Q8Uhmj1tKn6bWP4utcOpN8ao6BoJUItq0Uf+g==
+
+alpinejs@^3.17.5:
+  version "3.17.5"
+  resolved "https://registry.npmjs.org/alpinejs/-/alpinejs-3.17.5.tgz"
+  integrity sha512-XewMqRC6zjy8iaUPn86dxjvooAsNai3hUtQbdn0A5H2w7Jt10xHGZ1SczN5+Dvp3UKkuSEt9moy/UaUWOwKdnQ==
+  dependencies:
+    "@vue/reactivity" "~3.5.40"
+
+dom-serializer@^3.0.0, dom-serializer@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.npmjs.org/dom-serializer/-/dom-serializer-3.1.1.tgz"
+  integrity sha512-4MEa38/QexBob6gFNwu+EGdWvhJ1OKuNwdYY3Y3NyeWDQfnGeDYQUDfIRzWu5B5gsv03so2Uxd28YC6zrsx3Lw==
+  dependencies:
+    domelementtype "^3.0.0"
+    domhandler "^6.0.0"
+    entities "^8.0.0"
+
+domelementtype@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/domelementtype/-/domelementtype-3.0.0.tgz"
+  integrity sha512-umCQid3jKbDmVjx8jGaW7uUykm4DEUeyV21hPxNMo2nV955DhUThwqyOIDtreepP31hl84X7G5U9ZfsWvIB3Pg==
+
+domhandler@^6.0.0, domhandler@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.npmjs.org/domhandler/-/domhandler-6.0.1.tgz"
+  integrity sha512-gYzvtM72ZtxQO0T048kd6HWSbbGCNOUwcnfQ01cqIJ4X2IYKFFHZ5mKvrQETcFXxsRObZulDaKmy//R7TPtsBg==
+  dependencies:
+    domelementtype "^3.0.0"
+
+domutils@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/domutils/-/domutils-4.0.2.tgz"
+  integrity sha512-qI4JLRKnSzqFqr7hAlS5xQDusBCjKSEG4t4+7aNrIQMHBcsC2TGEhuyABJdYkgSewL57PNLYEiibY2iPKhKpaA==
+  dependencies:
+    dom-serializer "^3.0.0"
+    domelementtype "^3.0.0"
+    domhandler "^6.0.0"
+
+entities@^8.0.0:
+  version "8.1.0"
+  resolved "https://registry.npmjs.org/entities/-/entities-8.1.0.tgz"
+  integrity sha512-kxL7msIffSuh9aaFAMD7rxAIuTRMAHMeBtgHW2yUdWw732ZNh4MehkF2gdjvtdmikkaIP9bFDDJOPlsvm7avrA==
+
 esbuild-plugin-wasm@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/esbuild-plugin-wasm/-/esbuild-plugin-wasm-1.1.0.tgz"
   integrity sha512-0bQ6+1tUbySSnxzn5jnXHMDvYnT0cN/Wd4Syk8g/sqAIJUg7buTIi22svS3Qz6ssx895NT+TgLPb33xi1OkZig==
 
-esbuild@^0.28.2:
+esbuild-single-html@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/esbuild-single-html/-/esbuild-single-html-1.0.1.tgz"
+  integrity sha512-3Yfi14uMaAB7Z1mCbebJ9NISMXgEh80DFBBGhbUh33FL/o7CZYQO+5SyhR4KJn+hVDaBIacL7LOqGXfWcm4uHg==
+  dependencies:
+    dom-serializer "^3.1.1"
+    domhandler "^6.0.1"
+    htmlparser2 "^12.0.0"
+
+esbuild@^0.28.1, esbuild@^0.28.2:
   version "0.28.2"
   resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz"
   integrity sha512-HKVLS8dvII+xoKW9kmqxbRKrnWEXfJJr/FZhhJmiqIB0e053QNYFqOBouTMO/k5sID4MvCiUCvv8b9M4h32wIA==
@@ -84,6 +152,16 @@ esbuild@^0.28.2:
     "@esbuild/win32-arm64" "0.28.2"
     "@esbuild/win32-ia32" "0.28.2"
     "@esbuild/win32-x64" "0.28.2"
+
+htmlparser2@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.npmjs.org/htmlparser2/-/htmlparser2-12.0.0.tgz"
+  integrity sha512-Tz7u1i95/g2x2jz81+x0FBVhBhY5aRTvD3tXXdFaljuNdzDLJ8UGNRrTcj2cgQvAg3iW/h77Fz15nLW0L0CrZw==
+  dependencies:
+    domelementtype "^3.0.0"
+    domhandler "^6.0.0"
+    domutils "^4.0.2"
+    entities "^8.0.0"
 
 idb@^7.1.1:
   version "7.1.1"

@@ -1,7 +1,9 @@
 import { createTypstRenderer, RenderSession, TypstRenderer } from '@myriaddreamin/typst.ts';
-import { ManipulateDataOptions, RenderInSessionOptions, RenderOptions, RenderToCanvasOptions } from '@myriaddreamin/typst.ts/dist/esm/options.render.mjs';
 import wasmBytes from '@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm';
-
+import Alpine from 'alpinejs'
+ 
+window.Alpine = Alpine
+Alpine.start()
 
 const renderer = createTypstRenderer();
 
@@ -92,11 +94,6 @@ ws.onmessage = async (event: MessageEvent) => {
     let session = await session_store;
 
     renderer.manipulateData({ renderSession: session, action: `merge`, data: payload });
-
-/*     renderer.renderToCanvas({
-        container: div,
-        renderSession: session
-    }) */
   }
 };
 

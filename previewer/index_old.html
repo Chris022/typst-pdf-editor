@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Typst Editor</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+  <body>
+    <!-- INJECT_SCRIPT -->
+    <script>
+      window.__TINYMIST_PROVIDER_FIXTURE_LOADED__ = true;
+      window.__TINYMIST_PROVIDER_FIXTURE__ = {
+        ws: "ws://127.0.0.1:23625",
+        mode: "preview-arg:previewMode:Doc",
+        state: "preview-arg:state:",
+      };
+    </script>
+    <main id="fixture-previewer"></main>
+    <canvas id="preview-canvas" width="1000pt" height="1000pt"></canvas>
+  </body>
+</html>
