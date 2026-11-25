@@ -10,12 +10,12 @@
   },
   "main": "./out/extension.js",
   "scripts": {
+    "build-ex": "node esbuild.mjs --production",
+    "build": "cd previewer && vite build",
     "watch": "nodemon",
-    "build": "node esbuild.mjs --production",
     "vscode": "vsce package --allow-missing-repository",
     "addext": "codium --install-extension ./typst-pdf-editor-0.0.2.vsix",
-    "readdext": "codium --uninstall-extension chris.typst-pdf-editor && codium --install-extension ./typst-pdf-editor-0.0.2.vsix && echo \"\n\n\n\nInstalled Extension, now Control Shift P + Developer: Reload window\n\n\"",
-    "all": "yarn build && yarn vscode && yarn readdext"
+    "readdext": "codium --uninstall-extension chris.typst-pdf-editor && codium --install-extension ./typst-pdf-editor-0.0.2.vsix && echo \"\n\n\n\nInstalled Extension, now Control Shift P + Developer: Reload window\n\n\""
   },
   "devDependencies": {
     "@types/alpinejs": "^3.17.0",
@@ -25,13 +25,17 @@
     "esbuild": "^0.28.2",
     "esbuild-plugin-wasm": "^1.1.0",
     "esbuild-single-html": "^1.0.1",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vite-plugin-singlefile": "^2.3.4"
   },
   "dependencies": {
     "@myriaddreamin/typst-ts-renderer": "=0.8.0-rc3",
     "@myriaddreamin/typst-ts-web-compiler": "=0.8.0-rc3",
     "@myriaddreamin/typst.ts": "=0.8.0-rc3",
     "alpinejs": "^3.17.5",
+    "pdfjs": "^2.5.4",
+    "pdfjs-dist": "^6.5.438",
     "ws": "^8.22.0"
   },
   "activationEvents": [

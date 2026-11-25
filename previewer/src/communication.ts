@@ -1,69 +1,32 @@
-import {debug_data} from "./debug-data"
+import { debug_data } from "./debug-data.js";
+import { Store } from "./store.js"
+import { deconstruct_message } from "./util.js";
 
-type Connection = {
-    debug : Boolean;
-    ws : WebSocket | null;
-}
-
-const enc = new TextEncoder();
-const dec = new TextDecoder();
-
-export function initConnection(debug=false): Connection{
-
-    let ws = new WebSocket(window.__TINYMIST_PROVIDER_FIXTURE__.ws);
-
-    ws.binaryType = 'arraybuffer';
-
-    let connection = {
-        debug: debug,
-        ws: ws
-    };
-
-    ws.addEventListener("error",()=>{
-        console.log("Some Error occurred - entering debug mode");
-        connection.debug = false;
-    })
-    ws.addEventListener("open",()=>{
-        //On open, request full resend
-        ws.send("current");
-    })
-
-    return connection;
-}
-
-export function registerCallbacks(connection: Connection, init, update){
-    if(connection.debug){
-        //Handle Debug
+export function initWebSocket(store: Store) {
+    if(store.getState().spoof_websocket == true){
         setTimeout(()=>{
-            init(Uint8Array.fromBase64(debug_data));
-        },1000)
+                store.dispatch({ type: 'RENDER_INITIAL', payload: Uint8Array.fromBase64(debug_data) })
+        },2000);
 
         return;
     }
+    let socket = new WebSocket(window.__TINYMIST_PROVIDER_FIXTURE__.ws);
 
-    connection.ws.addEventListener("message",(event: MessageEvent)=>{
-        if (typeof event.data === 'string') {
-            console.log('Control message:', event.data);
-            return;
+    socket.binaryType = 'arraybuffer';
+
+    //ToDo Handle connection error and what not!
+
+    socket.onopen = (event) => {
+        //request full resend
+        socket.send("current");
+    }
+
+    socket.onmessage = (event) => {
+        let [type,payload] = deconstruct_message(event.data)
+
+        switch(type){
+            case "new": store.dispatch({ type: 'RENDER_INITIAL', payload: payload }); break;
+            case "diff-v1": store.dispatch({ type: 'RENDER_UPDATE', delta: payload }); break;
         }
-
-        const buffer = event.data as ArrayBuffer;
-        const bytes = new Uint8Array(buffer);
-
-        const message_idx = bytes.indexOf(enc.encode(",")[0]);
-
-        const message_type = dec.decode(bytes.slice(0, message_idx).buffer);
-
-        const payload = bytes.slice(message_idx + 1);
-
-        console.log(payload.toBase64())
-    
-        console.log(message_type);
-
-        if(message_type == "new"){
-            init(payload);
-        }else if(message_type == "diff-v1"){
-            update(payload);
-        }
-    })
+    };
 }

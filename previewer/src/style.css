@@ -1,0 +1,14 @@
+.canvas-container {
+    position: relative;
+    width: 600px;
+    height: 800px;
+}
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.overlayCanvas {
+    z-index: 10; /* Sits on top */
+    pointer-events: none; /* Allows clicks to pass through to the PDF if needed */
+}

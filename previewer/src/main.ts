@@ -1,18 +1,24 @@
-import { initConnection, registerCallbacks } from "./communication.js"
-import {init, fullRender} from "./rendering.js"
-import Alpine from 'alpinejs'
+import { initWebSocket } from "./communication.js";
+import { AppState } from "./logic.js";
+import { initPDFRenderer, initTSRenderer } from "./rendering.js";
+import { Store } from "./store.js"
+import './style.css';
 
-//Start Alpine JS
-window.Alpine = Alpine
-Alpine.start()
+const initialState: AppState = {
+    spoof_websocket: true,
+    rendering_data: {
+        required: false,
+        type: "Initial",
+        data: new Uint8Array()
+    }
+};
 
-let session_store = init();
+const store = new Store(initialState);
 
-let connection = initConnection(true);
+initWebSocket(store);
+initTSRenderer(store);
+initPDFRenderer(store);
 
-registerCallbacks(connection,
-  (payload)=>{
-    fullRender(session_store,payload);
-  },
-  ()=>{}
-);
+store.subscribe((state)=>{
+    console.log("New state:" , state)
+})

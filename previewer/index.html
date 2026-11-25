@@ -2,7 +2,11 @@
 <head>
 </head>
 <body>
-    <canvas id="preview" width="1000pt" height="1000pt"></canvas>
+    <div class="canvas-container">
+      <canvas class="overlayCanvas" id="typst-canvas" width="1000pt" height="1000pt"></canvas>
+      <canvas id="pdf-canvas" width="1000pt" height="1000pt"></canvas>
+    </div> 
+    
 
     <script>
       window.__TINYMIST_PROVIDER_FIXTURE_LOADED__ = true;
@@ -12,6 +16,6 @@
         state: "preview-arg:state:",
       };
     </script>
-    <script src="./src/main.ts"></script>
+    <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
