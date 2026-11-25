@@ -6,9 +6,6 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { RenderParameters } from "pdfjs-dist/types/src/display/api";
 import pdfWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
 
-
-
-
 function initSession(releaseSession, renderer: TypstRenderer) {
     return new Promise<RenderSession>((resolveSession, rejectSession) => {
         let sessionResolved = false;
@@ -39,13 +36,33 @@ export async function initTSRenderer(store: Store) {
     let session = await session_store;
 
     //Get canvas and Context
+    const container = document.getElementById("canvas-container") as HTMLDivElement;
     const canvas = document.getElementById('typst-canvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d')!;
 
     //The rendering functions
     async function render(state: AppState) {
-        if (state.rendering_data.required == false) return;
-        full_render(renderer, session, ctx, state.rendering_data.data)
+        if (state.rendering.last_rendered != "PDF") return;
+        if (state.rendering.typst_rendering_data.is_rendering == true) return;
+        if (state.rendering.typst_rendering_data.data == null) return;
+        store.dispatch({type:"TS_SET_RENDERING",rendering: true})
+
+        canvas.width = state.viewport.width;
+        canvas.height = state.viewport.height;
+        container.style.width = state.viewport.width + "";
+        container.style.height = state.viewport.height + "";
+        
+
+        await renderer.manipulateData({ renderSession: session, action: `merge`, data: state.rendering.typst_rendering_data.data });
+
+        await session.renderCanvas({
+            canvas: ctx,
+            pageOffset: 0,
+            pixelPerPt: state.viewport.scale,
+            backgroundColor: "#ffffff00"
+        })
+
+        store.dispatch({type:"TS_RENDERED"})
     }
 
     store.subscribe(render);
@@ -55,31 +72,47 @@ export async function initPDFRenderer(store: Store) {
     GlobalWorkerOptions.workerSrc = pdfWorker;
 
     //Get canvas and Context
+    const container = document.getElementById("canvas-container") as HTMLDivElement;
     const canvas = document.getElementById('pdf-canvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d')!;
 
-    var pdf = await getDocument({ url: "https://www.fsa.usda.gov/Internet/FSA_File/tech_assist.pdf" }).promise;
-    let page = await pdf.getPage(1)
-    var desiredWidth = 100;
-    var view = page.getViewport({ scale: 1, });
-    var scale = desiredWidth / view.width;
-    var scaledViewport = page.getViewport({ scale: scale, });
+    async function reload_pdf(state: AppState){
+        if(state.rendering.pdf_rendering_data.require_reload == false) return;
+        var pdf = await getDocument({ url:  state.rendering.pdf_rendering_data.file}).promise;
 
-    await page.render({
-        canvasContext: ctx,
-        viewport: view
-    } as RenderParameters).promise;
+        store.dispatch({ type: 'PDF_LOADED', pdf: pdf })
+    }
 
-}
+    async function render_pdf(state: AppState){
+        if(state.rendering.last_rendered != "NONE") return;
+        if (state.rendering.pdf_rendering_data.is_rendering == true) return;
+        if(state.rendering.pdf_rendering_data.pdf == null) return;
+        store.dispatch({type:"PDF_SET_RENDERING",rendering: true})
 
-async function full_render(renderer, session, ctx, data) {
+        let page = await state.rendering.pdf_rendering_data.pdf.getPage(1);
 
-    renderer.manipulateData({ renderSession: session, action: `merge`, data: data });
+        var viewport = page.getViewport({scale: state.viewport.scale});
 
-    session.renderCanvas({
-        canvas: ctx,
-        pageOffset: 0,
-        backgroundColor: "#ffffff00"
-    })
+        //Update page size.
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        container.style.width = viewport.width + "";
+        container.style.height = viewport.height + "";
+        
 
+        //Only do if size needs updating to avoid infinite loop
+        if(state.viewport.width != viewport.width || state.viewport.height != viewport.height){
+            store.dispatch({type:"VIEWPORT_CHANGE_SIZE",width:viewport.width,height:viewport.height})
+        }
+
+        await page.render({
+            canvasContext: ctx,
+            viewport: viewport
+        } as RenderParameters).promise;
+
+        store.dispatch({type:"PDF_RENDERED"})
+    }
+
+    store.subscribe(reload_pdf)
+    store.subscribe(render_pdf)
 }

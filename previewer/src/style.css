@@ -1,8 +1,14 @@
-.canvas-container {
-    position: relative;
-    width: 600px;
-    height: 800px;
+.flex-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
+
+.canvas-container {
+    position: relative; /* Absolute children are now relative to THIS div */
+}
+
 canvas {
     position: absolute;
     top: 0;

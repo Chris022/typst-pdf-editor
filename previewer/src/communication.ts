@@ -5,8 +5,8 @@ import { deconstruct_message } from "./util.js";
 export function initWebSocket(store: Store) {
     if(store.getState().spoof_websocket == true){
         setTimeout(()=>{
-                store.dispatch({ type: 'RENDER_INITIAL', payload: Uint8Array.fromBase64(debug_data) })
-        },2000);
+                store.dispatch({ type: 'TS_RENDER', payload: Uint8Array.fromBase64(debug_data) })
+        },1000);
 
         return;
     }
@@ -25,8 +25,8 @@ export function initWebSocket(store: Store) {
         let [type,payload] = deconstruct_message(event.data)
 
         switch(type){
-            case "new": store.dispatch({ type: 'RENDER_INITIAL', payload: payload }); break;
-            case "diff-v1": store.dispatch({ type: 'RENDER_UPDATE', delta: payload }); break;
+            case "new": store.dispatch({ type: 'TS_RENDER', payload: payload }); break;
+            case "diff-v1": store.dispatch({ type: 'TS_RENDER', payload: payload }); break;
         }
     };
 }
