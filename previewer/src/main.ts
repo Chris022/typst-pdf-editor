@@ -2,6 +2,7 @@ import { initWebSocket } from "./communication.js";
 import { AppState } from "./logic.js";
 import { initPDFRenderer, initTSRenderer } from "./rendering.js";
 import { Store } from "./store.js"
+import pdfURL from "./../../examples/simple.pdf?url"
 import './style.css';
 
 const initialState: AppState = {
@@ -20,7 +21,7 @@ const initialState: AppState = {
             is_rendering: false
         },
         pdf_rendering_data: {
-            file: "https://www.freeprintablepdf.eu/files/papers/en-colored-paper-red-a4.pdf",
+            file: pdfURL,
             require_reload: true,
             pdf: null,
             is_rendering: false
@@ -36,12 +37,19 @@ initTSRenderer(store);
 initPDFRenderer(store);
 
 window.addEventListener("wheel", (event) => {
+    let scale =  store.getState().viewport.scale;
     if(event.ctrlKey == true){
         if(event.deltaY < 0){
-            store.dispatch({type:"VIEWPORT_CHANGE_SCALE",delta: 0.4})
+            store.dispatch({type:"VIEWPORT_CHANGE",viewport:{
+                scale: scale + 0.4
+            }});
         }
         if(event.deltaY > 0){
-            store.dispatch({type:"VIEWPORT_CHANGE_SCALE",delta: -0.4})
+            if(scale - 0.4 > 0){
+                store.dispatch({type:"VIEWPORT_CHANGE",viewport:{
+                    scale: scale - 0.4
+                }});
+            }
         }
         return;
     }
@@ -51,12 +59,19 @@ window.addEventListener("wheel", (event) => {
     let page = store.getState().viewport.page;
 
     if(event.deltaY < 0){
-        //in case the scroll would now go below 0 change page instead 
+        //in case the scroll would now go below 0 change page instead
+
         if(scroll - delta_scroll < 0){
-            store.dispatch({type:"VIEWPORT_CHANGE_SCROLL",value: 100})
-            store.dispatch({type:"VIEWPORT_CHANGE_PAGE",page: page -1})
+            if(page - 1 >= 0){
+                store.dispatch({type:"VIEWPORT_CHANGE",viewport:{
+                    scroll: 100,
+                    page: page - 1
+                }});
+            }
         }else{
-            store.dispatch({type:"VIEWPORT_CHANGE_SCROLL",value: scroll - delta_scroll})
+            store.dispatch({type:"VIEWPORT_CHANGE",viewport:{
+                scroll: scroll - delta_scroll
+            }});
         }
         
     }
@@ -64,10 +79,14 @@ window.addEventListener("wheel", (event) => {
         let scroll = store.getState().viewport.scroll;
         //in case the scroll would now go over 100 change page instead 
         if(scroll + delta_scroll > 100){
-            store.dispatch({type:"VIEWPORT_CHANGE_SCROLL",value: 0})
-            store.dispatch({type:"VIEWPORT_CHANGE_PAGE",page: page + 1})
+            store.dispatch({type:"VIEWPORT_CHANGE",viewport:{
+                scroll: 0,
+                page: page + 1
+            }});
         }else{
-            store.dispatch({type:"VIEWPORT_CHANGE_SCROLL",value: scroll + delta_scroll})
+            store.dispatch({type:"VIEWPORT_CHANGE",viewport:{
+                scroll: scroll + delta_scroll
+            }});
         }
     }
 })

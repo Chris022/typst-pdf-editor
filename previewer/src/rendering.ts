@@ -6,6 +6,11 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { RenderParameters } from "pdfjs-dist/types/src/display/api";
 import pdfWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
 
+import "pdfjs-dist/wasm/jbig2_nowasm_fallback.js";
+
+
+const PAGE_SPACING = 10;
+
 function initSession(releaseSession, renderer: TypstRenderer) {
     return new Promise<RenderSession>((resolveSession, rejectSession) => {
         let sessionResolved = false;
@@ -60,9 +65,9 @@ export async function initTSRenderer(store: Store) {
         //We now render the first page to this new canvas
         await session.renderCanvas({
             canvas: buffer_ctx_1 as unknown as CanvasRenderingContext2D,
-            pageOffset: 0,
+            pageOffset: state.viewport.page,
             pixelPerPt: state.viewport.scale,
-            backgroundColor: "#ffffff00"
+            backgroundColor: "#7bee648e"
         }).catch((error:Error)=>{
             //Check if caused by missing page - in this case ignore
             if(error.message.match("MissingPage").length != 0){
@@ -71,9 +76,9 @@ export async function initTSRenderer(store: Store) {
         })
         await session.renderCanvas({
             canvas: buffer_ctx_2 as unknown as CanvasRenderingContext2D,
-            pageOffset: 0,
+            pageOffset: state.viewport.page+1,
             pixelPerPt: state.viewport.scale,
-            backgroundColor: "#ffffff00"
+            backgroundColor: "#7bee648e"
         }).catch((error:Error)=>{
             //Check if caused by missing page - in this case ignore
             if(error.message.match("MissingPage").length != 0){
@@ -89,7 +94,7 @@ export async function initTSRenderer(store: Store) {
         container.style.height = state.viewport.height + "";
 
         ctx.drawImage(buffer_1,0,-state.viewport.scroll/100 * state.viewport.height);
-        ctx.drawImage(buffer_2,0,Math.floor(state.viewport.height-(state.viewport.scroll/100 * state.viewport.height)));
+        ctx.drawImage(buffer_2,0,PAGE_SPACING + Math.floor(state.viewport.height-(state.viewport.scroll/100 * state.viewport.height)));
 
         store.dispatch({type:"TS_RENDERED"})
     }
@@ -107,8 +112,12 @@ export async function initPDFRenderer(store: Store) {
 
     async function reload_pdf(state: AppState){
         if(state.rendering.pdf_rendering_data.require_reload == false) return;
-        var pdf = await getDocument({ url:  state.rendering.pdf_rendering_data.file}).promise;
-
+        var pdf = await getDocument(
+            {
+                wasmUrl: './typst-webview-assets/wasm/',
+                url:  state.rendering.pdf_rendering_data.file})
+            .promise;
+        
         store.dispatch({ type: 'PDF_LOADED', pdf: pdf })
     }
 
@@ -118,8 +127,8 @@ export async function initPDFRenderer(store: Store) {
         if(state.rendering.pdf_rendering_data.pdf == null) return;
         store.dispatch({type:"PDF_SET_RENDERING",rendering: true})
 
-        let first_page = await state.rendering.pdf_rendering_data.pdf.getPage(1);
-        let second_page = await state.rendering.pdf_rendering_data.pdf.getPage(1);
+        let first_page = await state.rendering.pdf_rendering_data.pdf.getPage(state.viewport.page+1);
+        let second_page = await state.rendering.pdf_rendering_data.pdf.getPage(state.viewport.page+2);
 
         var first_viewport = first_page.getViewport({scale: state.viewport.scale});
 
@@ -128,7 +137,9 @@ export async function initPDFRenderer(store: Store) {
 
         //Only do if size needs updating to avoid infinite loop
         if(state.viewport.width != first_viewport.width || state.viewport.height != first_viewport.height){
-            store.dispatch({type:"VIEWPORT_CHANGE_SIZE",width:first_viewport.width,height:first_viewport.height})
+            store.dispatch({type:"VIEWPORT_CHANGE",viewport:{
+                width:first_viewport.width,height:first_viewport.height
+            }})
         }
 
         //Create two buffers for redering our pdf
@@ -157,7 +168,8 @@ export async function initPDFRenderer(store: Store) {
 
         //And now draw them onto the real canvas. This was we don't get flickering 
         ctx.drawImage(buffer_1,0,-state.viewport.scroll/100 * state.viewport.height);
-        ctx.drawImage(buffer_2,0,Math.floor(state.viewport.height-(state.viewport.scroll/100 * state.viewport.height)));
+        
+        ctx.drawImage(buffer_2,0,PAGE_SPACING + Math.floor(state.viewport.height-(state.viewport.scroll/100 * state.viewport.height)));
 
         store.dispatch({type:"PDF_RENDERED"});
     }

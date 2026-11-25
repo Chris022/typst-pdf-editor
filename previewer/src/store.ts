@@ -11,7 +11,7 @@ export class Store {
 
     dispatch(action: Action) {
         this.state = appReducer(this.state, action);
-        this.listeners.forEach(async listener => await listener(this.state));
+        this.listeners.forEach(listener => listener(this.state));
     }
 
     subscribe(listener: (state: AppState) => void) {
