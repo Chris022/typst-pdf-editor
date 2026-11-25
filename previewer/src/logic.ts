@@ -7,7 +7,9 @@ export type AppState = {
     viewport: {
         width: number,
         height: number,
-        scale: number
+        scale: number,
+        scroll: number,
+        page: number,
     },
     rendering: {
         last_rendered : Layer
@@ -30,6 +32,8 @@ export type Action =
     | { type: 'PDF_LOADED'; pdf: PDFDocumentProxy }
     | { type: 'VIEWPORT_CHANGE_SIZE'; width: number, height: number }
     | { type: 'VIEWPORT_CHANGE_SCALE', delta: number}
+    | { type: 'VIEWPORT_CHANGE_SCROLL', value: number}
+    | { type: 'VIEWPORT_CHANGE_PAGE', page: number}
     | { type: 'PDF_RENDERED'}
     | { type: 'TS_RENDERED'}
     | { type: 'TS_SET_RENDERING', rendering: boolean}
@@ -68,6 +72,25 @@ export function appReducer(state: AppState, action: Action): AppState {
                     last_rendered: "NONE",
                 },
                 viewport : {...state.viewport,scale:state.viewport.scale + action.delta}
+            };
+        case 'VIEWPORT_CHANGE_SCROLL':
+            //A viewport change also needs to trigger a rerender
+            return  { ...state, 
+                rendering: {
+                    ...state.rendering,
+                    last_rendered: "NONE",
+                },
+                viewport : {...state.viewport,scroll:action.value}
+            };
+        case 'VIEWPORT_CHANGE_PAGE':
+            if(action.page < 0) return state
+            //A viewport change also needs to trigger a rerender
+            return  { ...state, 
+                rendering: {
+                    ...state.rendering,
+                    last_rendered: "NONE",
+                },
+                viewport : {...state.viewport,page:action.page}
             };
         case 'PDF_RENDERED':
             return { ...state, rendering: {...state.rendering,last_rendered:"PDF", pdf_rendering_data: {...state.rendering.pdf_rendering_data, is_rendering: false }}};

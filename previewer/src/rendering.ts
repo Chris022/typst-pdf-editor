@@ -47,20 +47,49 @@ export async function initTSRenderer(store: Store) {
         if (state.rendering.typst_rendering_data.data == null) return;
         store.dispatch({type:"TS_SET_RENDERING",rendering: true})
 
+        //Set renderer data
+        await renderer.manipulateData({ renderSession: session, action: `merge`, data: state.rendering.typst_rendering_data.data });
+
+        //In order to allow for scrolling we need to create a new canvas here
+        //Create two buffers for redering our pdf
+        let buffer_1 = new OffscreenCanvas(state.viewport.width,state.viewport.height);
+        let buffer_ctx_1 = buffer_1.getContext("2d");
+        let buffer_2 = new OffscreenCanvas(state.viewport.width,state.viewport.height);
+        let buffer_ctx_2 = buffer_2.getContext("2d");
+
+        //We now render the first page to this new canvas
+        await session.renderCanvas({
+            canvas: buffer_ctx_1 as unknown as CanvasRenderingContext2D,
+            pageOffset: 0,
+            pixelPerPt: state.viewport.scale,
+            backgroundColor: "#ffffff00"
+        }).catch((error:Error)=>{
+            //Check if caused by missing page - in this case ignore
+            if(error.message.match("MissingPage").length != 0){
+                //Do nothing
+            }
+        })
+        await session.renderCanvas({
+            canvas: buffer_ctx_2 as unknown as CanvasRenderingContext2D,
+            pageOffset: 0,
+            pixelPerPt: state.viewport.scale,
+            backgroundColor: "#ffffff00"
+        }).catch((error:Error)=>{
+            //Check if caused by missing page - in this case ignore
+            if(error.message.match("MissingPage").length != 0){
+                //Do nothing
+            }
+        })
+
+        //update canvas size - Call this as close before drawing as possible
+        // Because it triggers emptying of canvas this might cause flickering
         canvas.width = state.viewport.width;
         canvas.height = state.viewport.height;
         container.style.width = state.viewport.width + "";
         container.style.height = state.viewport.height + "";
-        
 
-        await renderer.manipulateData({ renderSession: session, action: `merge`, data: state.rendering.typst_rendering_data.data });
-
-        await session.renderCanvas({
-            canvas: ctx,
-            pageOffset: 0,
-            pixelPerPt: state.viewport.scale,
-            backgroundColor: "#ffffff00"
-        })
+        ctx.drawImage(buffer_1,0,-state.viewport.scroll/100 * state.viewport.height);
+        ctx.drawImage(buffer_2,0,Math.floor(state.viewport.height-(state.viewport.scroll/100 * state.viewport.height)));
 
         store.dispatch({type:"TS_RENDERED"})
     }
@@ -89,28 +118,48 @@ export async function initPDFRenderer(store: Store) {
         if(state.rendering.pdf_rendering_data.pdf == null) return;
         store.dispatch({type:"PDF_SET_RENDERING",rendering: true})
 
-        let page = await state.rendering.pdf_rendering_data.pdf.getPage(1);
+        let first_page = await state.rendering.pdf_rendering_data.pdf.getPage(1);
+        let second_page = await state.rendering.pdf_rendering_data.pdf.getPage(1);
 
-        var viewport = page.getViewport({scale: state.viewport.scale});
+        var first_viewport = first_page.getViewport({scale: state.viewport.scale});
 
-        //Update page size.
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        container.style.width = viewport.width + "";
-        container.style.height = viewport.height + "";
-        
+        //For now assume every page has the same size!
+        var second_viewport = first_viewport;
 
         //Only do if size needs updating to avoid infinite loop
-        if(state.viewport.width != viewport.width || state.viewport.height != viewport.height){
-            store.dispatch({type:"VIEWPORT_CHANGE_SIZE",width:viewport.width,height:viewport.height})
+        if(state.viewport.width != first_viewport.width || state.viewport.height != first_viewport.height){
+            store.dispatch({type:"VIEWPORT_CHANGE_SIZE",width:first_viewport.width,height:first_viewport.height})
         }
 
-        await page.render({
-            canvasContext: ctx,
-            viewport: viewport
-        } as RenderParameters).promise;
+        //Create two buffers for redering our pdf
+        let buffer_1 = new OffscreenCanvas(first_viewport.width,first_viewport.height);
+        let buffer_ctx_1 = buffer_1.getContext("2d");
+        let buffer_2 = new OffscreenCanvas(second_viewport.width,second_viewport.height);
+        let buffer_ctx_2 = buffer_2.getContext("2d");
 
-        store.dispatch({type:"PDF_RENDERED"})
+        await first_page.render({
+            canvasContext: buffer_ctx_1 as unknown as CanvasRenderingContext2D,
+            viewport: first_viewport
+        }as RenderParameters).promise;
+
+        await second_page.render({
+            canvasContext: buffer_ctx_2 as unknown as CanvasRenderingContext2D,
+            viewport: second_viewport
+        }as RenderParameters).promise;
+
+
+        //update canvas size - Call this as close before drawing as possible
+        // Because it triggers emptying of canvas this might cause flickering
+        canvas.width = first_viewport.width;
+        canvas.height = first_viewport.height;
+        container.style.width = first_viewport.width + "";
+        container.style.height = first_viewport.height + "";
+
+        //And now draw them onto the real canvas. This was we don't get flickering 
+        ctx.drawImage(buffer_1,0,-state.viewport.scroll/100 * state.viewport.height);
+        ctx.drawImage(buffer_2,0,Math.floor(state.viewport.height-(state.viewport.scroll/100 * state.viewport.height)));
+
+        store.dispatch({type:"PDF_RENDERED"});
     }
 
     store.subscribe(reload_pdf)
